@@ -6,6 +6,7 @@ import (
 	pb "github.com/brotherlogic/frametracker/proto"
 )
 
+//RecordStatus records a frame status
 func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.StatusResponse, error) {
 	defer s.save(ctx)
 
