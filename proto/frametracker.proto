@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package frametracker;
+
+message Config {
+  repeated Status states = 1;
+}
+
+message Status {
+  int64 time_last_sync = 1;
+}
