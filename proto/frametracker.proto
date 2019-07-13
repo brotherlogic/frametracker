@@ -8,4 +8,15 @@ message Config {
 
 message Status {
   int64 time_last_sync = 1;
+  string token_hash = 2;
+}
+
+message StatusRequest {
+  Status status = 1;
+}
+
+message StatusResponse {}
+
+service FrameTrackerService {
+  rpc RecordStatus(StatusRequest) returns (StatusResponse) {};
 }
