@@ -9,6 +9,7 @@ message Config {
 message Status {
   int64 time_last_sync = 1;
   string token_hash = 2;
+  string newest_file = 3;
 }
 
 message StatusRequest {
