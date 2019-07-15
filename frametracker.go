@@ -79,8 +79,13 @@ func (s *Server) Mote(ctx context.Context, master bool) error {
 
 // GetState gets the state of the server
 func (s *Server) GetState() []*pbg.State {
+	hashes := []string{}
+	for _, state := range s.config.States {
+		hashes = append(hashes, state.TokenHash)
+	}
 	return []*pbg.State{
 		&pbg.State{Key: "states", Value: int64(len(s.config.States))},
+		&pbg.State{Key: "hashes", Text: fmt.Sprintf("%v", hashes)},
 	}
 }
 
