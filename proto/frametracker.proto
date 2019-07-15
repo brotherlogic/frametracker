@@ -10,6 +10,9 @@ message Status {
   int64 time_last_sync = 1;
   string token_hash = 2;
   string newest_file = 3;
+  int64   newest_file_date = 4;
+  string dropbox_error = 5;
+  string dropbox_failure = 6;
 }
 
 message StatusRequest {
