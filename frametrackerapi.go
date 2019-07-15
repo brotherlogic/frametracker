@@ -20,6 +20,7 @@ func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.St
 		}
 	}
 
+	s.Log(fmt.Sprintf("%v", time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0))))
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
 		s.RaiseIssue(ctx, "Picture Frame Behind", fmt.Sprintf("%v is behind", in.Status.TokenHash), false)
 	}
