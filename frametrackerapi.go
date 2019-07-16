@@ -15,11 +15,11 @@ func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.St
 
 	s.Log(fmt.Sprintf("%v", time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0))))
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
-		s.RaiseIssue(ctx, "Picture Frame Behind", fmt.Sprintf("%v is behind", in.Status.TokenHash), false)
+		s.RaiseIssue(ctx, "Picture Frame Behind", fmt.Sprintf("%v is behind", in.Status.Origin), false)
 	}
 
 	for i, status := range s.config.States {
-		if status.TokenHash == in.Status.TokenHash {
+		if status.TokenHash == in.Status.TokenHash && status.Origin == in.Status.Origin {
 			s.config.States[i] = in.Status
 			return &pb.StatusResponse{}, nil
 		}
