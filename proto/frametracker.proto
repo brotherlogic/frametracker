@@ -13,6 +13,7 @@ message Status {
   int64   newest_file_date = 4;
   string dropbox_error = 5;
   string dropbox_failure = 6;
+   string origin = 7;
 }
 
 message StatusRequest {
