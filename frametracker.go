@@ -106,7 +106,7 @@ func main() {
 	server.GoServer.KSclient = *keystoreclient.GetClient(server.DialMaster)
 	server.PrepServer()
 	server.Register = server
-	server.RegisterServer("frametracker", false)
+	server.RegisterServerV2("frametracker", false)
 
 	fmt.Printf("%v", server.Serve())
 }
