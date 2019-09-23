@@ -106,7 +106,10 @@ func main() {
 	server.GoServer.KSclient = *keystoreclient.GetClient(server.DialMaster)
 	server.PrepServer()
 	server.Register = server
-	server.RegisterServerV2("frametracker", false)
+	err := server.RegisterServerV2("frametracker", false)
+	if err != nil {
+		log.Fatalf("Cannot register: %v", err)
+	}
 
 	fmt.Printf("%v", server.Serve())
 }
