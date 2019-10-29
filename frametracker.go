@@ -93,6 +93,13 @@ func (s *Server) GetState() []*pbg.State {
 	}
 }
 
+func (s *Server) checkTime(ctx context.Context) error {
+	if time.Now().Sub(time.Unix(s.config.LastReceive, 0)) > time.Hour*24 {
+		s.RaiseIssue(ctx, "Frame Tracker has not processed anything", fmt.Sprintf("No updates since %v", time.Unix(s.config.LastReceive, 0)), false)
+	}
+	return nil
+}
+
 func main() {
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
@@ -110,6 +117,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Cannot register: %v", err)
 	}
+
+	server.RegisterRepeatingTask(server.checkTime, "check_time", time.Minute)
 
 	fmt.Printf("%v", server.Serve())
 }

@@ -11,7 +11,10 @@ import (
 
 //RecordStatus records a frame status
 func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.StatusResponse, error) {
-	defer s.save(ctx)
+	defer func() {
+		s.config.LastReceive = time.Now().Unix()
+		s.save(ctx)
+	}()
 
 	s.Log(fmt.Sprintf("%v -> %v (%v)", in.Status.Origin, time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)), in.Status.NewestFile))
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
