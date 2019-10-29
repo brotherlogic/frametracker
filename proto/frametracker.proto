@@ -4,6 +4,7 @@ package frametracker;
 
 message Config {
   repeated Status states = 1;
+  int64 last_receive = 2;
 }
 
 message Status {
