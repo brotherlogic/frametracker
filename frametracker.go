@@ -25,6 +25,7 @@ const (
 type Server struct {
 	*goserver.GoServer
 	config *pb.Config
+	bad    int64
 }
 
 // Init builds the server
@@ -87,6 +88,7 @@ func (s *Server) GetState() []*pbg.State {
 		lastUpdate[state.Origin] = fmt.Sprintf("%v", time.Unix(state.NewestFileDate, 0))
 	}
 	return []*pbg.State{
+		&pbg.State{Key: "bad", Value: s.bad},
 		&pbg.State{Key: "last", TimeValue: s.config.LastReceive},
 		&pbg.State{Key: "states", Value: int64(len(s.config.States))},
 		&pbg.State{Key: "hashes", Text: fmt.Sprintf("%v", hashes)},
@@ -96,7 +98,8 @@ func (s *Server) GetState() []*pbg.State {
 
 func (s *Server) checkTime(ctx context.Context) error {
 	if time.Now().Sub(time.Unix(s.config.LastReceive, 0)) > time.Hour*24 {
-		s.RaiseIssue(ctx, "Frame Tracker has not processed anything", fmt.Sprintf("No updates since %v", time.Unix(s.config.LastReceive, 0)), false)
+		s.bad++
+		//s.RaiseIssue(ctx, "Frame Tracker has not processed anything", fmt.Sprintf("No updates since %v", time.Unix(s.config.LastReceive, 0)), false)
 	}
 	return nil
 }
