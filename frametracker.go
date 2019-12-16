@@ -119,7 +119,7 @@ func main() {
 	server.Register = server
 	err := server.RegisterServerV2("frametracker", false, false)
 	if err != nil {
-		log.Fatalf("Cannot register: %v", err)
+		return
 	}
 
 	server.RegisterRepeatingTask(server.checkTime, "check_time", time.Minute)
