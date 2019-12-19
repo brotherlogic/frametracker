@@ -88,8 +88,8 @@ func (s *Server) GetState() []*pbg.State {
 		lastUpdate[state.Origin] = fmt.Sprintf("%v", time.Unix(state.NewestFileDate, 0))
 	}
 	return []*pbg.State{
-		&pbg.State{Key: "bad", Value: s.bad},
 		&pbg.State{Key: "last", TimeValue: s.config.LastReceive},
+		&pbg.State{Key: "bad", Value: s.bad},
 		&pbg.State{Key: "states", Value: int64(len(s.config.States))},
 		&pbg.State{Key: "hashes", Text: fmt.Sprintf("%v", hashes)},
 		&pbg.State{Key: "updates", Text: fmt.Sprintf("%v", lastUpdate)},
