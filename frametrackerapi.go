@@ -11,10 +11,10 @@ import (
 
 //RecordStatus records a frame status
 func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.StatusResponse, error) {
-	defer func() {
-		s.config.LastReceive = time.Now().Unix()
-		s.save(ctx)
-	}()
+	config, err := s.load(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	s.Log(fmt.Sprintf("%v -> %v (%v)", in.Status.Origin, time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)), in.Status.NewestFile))
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
@@ -23,13 +23,13 @@ func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.St
 		}
 	}
 
-	for i, status := range s.config.States {
+	for i, status := range config.States {
 		if status.TokenHash == in.Status.TokenHash && status.Origin == in.Status.Origin {
-			s.config.States[i] = in.Status
+			config.States[i] = in.Status
 			return &pb.StatusResponse{}, nil
 		}
 	}
 
-	s.config.States = append(s.config.States, in.Status)
-	return &pb.StatusResponse{}, nil
+	config.States = append(config.States, in.Status)
+	return &pb.StatusResponse{}, s.save(ctx, config)
 }
