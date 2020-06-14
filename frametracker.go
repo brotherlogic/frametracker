@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"time"
 
 	"github.com/brotherlogic/goserver"
-	"github.com/brotherlogic/keystore/client"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -24,33 +22,30 @@ const (
 //Server main server type
 type Server struct {
 	*goserver.GoServer
-	config *pb.Config
-	bad    int64
+	bad int64
 }
 
 // Init builds the server
 func Init() *Server {
 	s := &Server{
 		GoServer: &goserver.GoServer{},
-		config:   &pb.Config{},
 	}
 	return s
 }
 
-func (s *Server) save(ctx context.Context) {
-	s.KSclient.Save(ctx, KEY, s.config)
+func (s *Server) save(ctx context.Context, config *pb.Config) error {
+	return s.KSclient.Save(ctx, KEY, config)
 }
 
-func (s *Server) load(ctx context.Context) error {
+func (s *Server) load(ctx context.Context) (*pb.Config, error) {
 	config := &pb.Config{}
 	data, _, err := s.KSclient.Read(ctx, KEY, config)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	s.config = data.(*pb.Config)
-	return nil
+	return data.(*pb.Config), nil
 }
 
 // DoRegister does RPC registration
@@ -65,43 +60,17 @@ func (s *Server) ReportHealth() bool {
 
 // Shutdown the server
 func (s *Server) Shutdown(ctx context.Context) error {
-	s.save(ctx)
 	return nil
 }
 
 // Mote promotes/demotes this server
 func (s *Server) Mote(ctx context.Context, master bool) error {
-	if master {
-		err := s.load(ctx)
-		return err
-	}
-
 	return nil
 }
 
 // GetState gets the state of the server
 func (s *Server) GetState() []*pbg.State {
-	hashes := []string{}
-	lastUpdate := make(map[string]string)
-	for _, state := range s.config.States {
-		hashes = append(hashes, state.TokenHash)
-		lastUpdate[state.Origin] = fmt.Sprintf("%v", time.Unix(state.NewestFileDate, 0))
-	}
-	return []*pbg.State{
-		&pbg.State{Key: "bad", Value: s.bad},
-		&pbg.State{Key: "last", TimeValue: s.config.LastReceive},
-		&pbg.State{Key: "states", Value: int64(len(s.config.States))},
-		&pbg.State{Key: "hashes", Text: fmt.Sprintf("%v", hashes)},
-		&pbg.State{Key: "updates", Text: fmt.Sprintf("%v", lastUpdate)},
-	}
-}
-
-func (s *Server) checkTime(ctx context.Context) error {
-	if time.Now().Sub(time.Unix(s.config.LastReceive, 0)) > time.Hour*24 {
-		s.bad++
-		//s.RaiseIssue(ctx, "Frame Tracker has not processed anything", fmt.Sprintf("No updates since %v", time.Unix(s.config.LastReceive, 0)), false)
-	}
-	return nil
+	return []*pbg.State{}
 }
 
 func main() {
@@ -114,15 +83,12 @@ func main() {
 		log.SetOutput(ioutil.Discard)
 	}
 	server := Init()
-	server.GoServer.KSclient = *keystoreclient.GetClient(server.DialMaster)
 	server.PrepServer()
 	server.Register = server
 	err := server.RegisterServerV2("frametracker", false, false)
 	if err != nil {
 		return
 	}
-
-	server.RegisterRepeatingTask(server.checkTime, "check_time", time.Minute)
 
 	fmt.Printf("%v", server.Serve())
 }

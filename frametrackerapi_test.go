@@ -14,8 +14,20 @@ func InitTest() *Server {
 	s.SkipLog = true
 	s.SkipIssue = true
 	s.GoServer.KSclient = *keystoreclient.GetTestClient("./testing")
+	s.KSclient.Save(context.Background(), KEY, &pb.Config{})
 
 	return s
+}
+
+func TestFail(t *testing.T) {
+	s := InitTest()
+	s.GoServer.KSclient.Fail = true
+
+	_, err := s.RecordStatus(context.Background(), &pb.StatusRequest{Status: &pb.Status{TokenHash: "blah"}})
+	if err == nil {
+		t.Errorf("Did not fail")
+	}
+
 }
 
 func TestAddState(t *testing.T) {
@@ -27,18 +39,9 @@ func TestAddState(t *testing.T) {
 		t.Fatalf("Error recording state: %v", err)
 	}
 
-	if len(s.config.States) != 1 {
-		t.Errorf("State was not recorded: %v", s.config.States)
-	}
-
 	_, err = s.RecordStatus(context.Background(), &pb.StatusRequest{Status: &pb.Status{TokenHash: "blah"}})
 
 	if err != nil {
 		t.Fatalf("Error recording state: %v", err)
 	}
-
-	if len(s.config.States) != 1 {
-		t.Errorf("State was not recorded correctly: %v", s.config.States)
-	}
-
 }
