@@ -85,7 +85,7 @@ func main() {
 	server := Init()
 	server.PrepServer()
 	server.Register = server
-	err := server.RegisterServerV2("frametracker", false, false)
+	err := server.RegisterServerV2("frametracker", false, true)
 	if err != nil {
 		return
 	}
