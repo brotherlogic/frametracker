@@ -19,7 +19,7 @@ func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.St
 	s.Log(fmt.Sprintf("%v -> %v (%v)", in.Status.Origin, time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)), in.Status.NewestFile))
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
 		if in.Status.Origin != "natframe" {
-			s.RaiseIssue("Picture Frame Behind", fmt.Sprintf("%v is behind", in.Status.Origin))
+			s.RaiseIssue("Picture Frame Behind", fmt.Sprintf("%v is behind -> %v", in.Status.Origin, time.Unix(in.Status.NewestFileDate/1000, 0)))
 		}
 	}
 
