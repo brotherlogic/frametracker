@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package frametracker;
 
+option go_package = "github.com/brotherlogic/frametracker/proto";
+
 message Config {
   repeated Status states = 1;
   int64 last_receive = 2;
