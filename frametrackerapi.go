@@ -25,7 +25,7 @@ func (s *Server) RecordStatus(ctx context.Context, in *pb.StatusRequest) (*pb.St
 		return nil, err
 	}
 
-	s.Log(fmt.Sprintf("%v -> %v (%v)", in.Status.Origin, time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)), in.Status.NewestFile))
+	s.CtxLog(ctx, fmt.Sprintf("%v -> %v (%v)", in.Status.Origin, time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)), in.Status.NewestFile))
 	frameAge.With(prometheus.Labels{"frame": in.Status.Origin}).Set(float64(time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)).Seconds()))
 
 	if time.Now().Sub(time.Unix(in.Status.NewestFileDate/1000, 0)) > time.Hour*24*7 {
