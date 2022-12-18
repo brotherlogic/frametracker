@@ -3,9 +3,9 @@ module github.com/brotherlogic/frametracker
 go 1.16
 
 require (
-	github.com/brotherlogic/goserver v0.0.0-20221202193151-b0b39691c212
-	github.com/brotherlogic/keystore v0.0.0-20221210190215-af3698c6a2c9
-	github.com/brotherlogic/lock v0.0.0-20221211025725-c7b14345e31e // indirect
+	github.com/brotherlogic/dstore v0.0.0-20221218034407-d0383146f424 // indirect
+	github.com/brotherlogic/goserver v0.0.0-20221217002224-0ba5c0213be1
+	github.com/brotherlogic/keystore v0.0.0-20221218025925-612b2a89a337
 	github.com/golang/protobuf v1.5.2
 	github.com/prometheus/client_golang v1.14.0
 	golang.org/x/net v0.4.0
